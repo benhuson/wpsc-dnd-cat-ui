@@ -96,11 +96,14 @@ class WPSC_DnDCatUI {
 
 		$failed = array();
 		foreach ( $products as $order => $product_id ) {
-			$result = wp_update_post( array(
-				'ID'         => $product_id,
-				'menu_order' => $order
-			) );
-			if ( ! $result )
+			$result = $wpdb->update(
+				$wpdb->posts,
+				array( 'menu_order' => $order ),
+				array( 'ID' => $product_id ),
+				array( '%d' ),
+				array( '%d' )
+			);
+			if ( $result == 0 )
 				$failed[] = $product_id;
 		}
 
