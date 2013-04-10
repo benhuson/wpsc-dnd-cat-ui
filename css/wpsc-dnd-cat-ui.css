@@ -1,0 +1,34 @@
+
+.wpsc-dnd-cat-ui .sortable-posts {
+	display: block;
+	margin: 20px 0;
+	position: relative;
+	width: 75%;
+}
+	.wpsc-dnd-cat-ui .sortable-posts .post {
+		background-color: #FFF;
+		border: 1px solid #EEE;
+		clear: both;
+		cursor: pointer;
+		display: block;
+		margin: 2px 0;
+		overflow: hidden;
+		padding: 3px 10px;
+	}
+		.wpsc-dnd-cat-ui .sortable-posts .post .loader {
+			background: url(../images/ajax-loader.gif) no-repeat 0px 0px;
+			display: none;
+			float: right;
+			width: 16px;
+			height: 16px;
+		}
+		.wpsc-dnd-cat-ui .sortable-posts .post .thumbnail {
+			display: inline-block;
+			width: 60px;
+		}
+			.wpsc-dnd-cat-ui .sortable-posts .post .thumbnail img {
+				height: auto;
+				margin-right: 10px;
+				max-width: 50px;
+				vertical-align: middle;
+			}
