@@ -60,7 +60,7 @@ class WPSC_DnDCatUI {
 		global $wpdb;
 		$term = null;
 		if ( isset( $_GET['wpsc_product_category'] ) ) {
-			$term = get_term_by( 'slug', $_GET['wpsc_product_category'], 'wpsc_product_category' );
+			$term = get_term_by( 'slug', sanitize_text_field( $_GET['wpsc_product_category'] ), 'wpsc_product_category' );
 		}
 		if ( ! $term )
 			return;
@@ -74,7 +74,7 @@ class WPSC_DnDCatUI {
 				AND post_type = 'wpsc-product'
 				AND term_taxonomy_id = %d
 			GROUP BY ID
-			ORDER BY menu_order ASC
+			ORDER BY tr.term_order ASC
 		", $term->term_taxonomy_id ) );
 		echo '<div class="sortable-posts">';
 		foreach ( $posts as $post ) {
@@ -90,28 +90,52 @@ class WPSC_DnDCatUI {
 	function save_product_order_ajax_callback() {
 		global $wpdb;
 
-		foreach ( $_POST['post'] as $product ) {
-			$products[] = (int) str_replace( 'post-', '', $product );
-		}
+		$products = array();
 
-		$failed = array();
-		foreach ( $products as $order => $product_id ) {
-			$result = $wpdb->update(
-				$wpdb->posts,
-				array( 'menu_order' => $order ),
-				array( 'ID' => $product_id ),
-				array( '%d' ),
-				array( '%d' )
-			);
-			if ( $result == 0 )
-				$failed[] = $product_id;
-		}
+		if ( isset( $_POST['post'] ) && is_array( $_POST['post'] ) ) {
 
-		if ( ! empty( $failed ) ) {
-			$error_data = array(
-				'failed_ids' => $failed
-			);
-			return new WP_Error( 'wpsc_cannot_save_product_sort_order', __( 'Unable to save the product sort order. Please try again.', 'wpsc-dnd-cat-ui' ), $error_data );
+			foreach ( $_POST['post'] as $product ) {
+				$products[] = (int) str_replace( 'post-', '', $product );
+			}
+
+			$category = get_term_by( 'slug', $_POST['category_id'], 'wpsc_product_category' );
+
+			$failed = array();
+			foreach ( $products as $order => $product_id ) {
+
+				$order = absint( $order );
+				$product_id = absint( $product_id );
+
+				// Update Menu Order
+				$result = $wpdb->update(
+					$wpdb->posts,
+					array( 'menu_order' => $order ),
+					array( 'ID' => $product_id ),
+					array( '%d' ),
+					array( '%d' )
+				);
+
+				// Update Term Order
+				if ( $category ) {
+					$wpdb->update( $wpdb->term_relationships,
+						array( 'term_order' => $order ),
+						array( 'object_id' => $product_id, 'term_taxonomy_id' => $category->term_taxonomy_id ),
+						array( '%d' ),
+						array( '%d', '%d' )
+					);
+				}
+
+				if ( $result == 0 )
+					$failed[] = $product_id;
+			}
+
+			if ( ! empty( $failed ) ) {
+				$error_data = array(
+					'failed_ids' => $failed
+				);
+				return new WP_Error( 'wpsc_cannot_save_product_sort_order', __( 'Unable to save the product sort order. Please try again.', 'wpsc-dnd-cat-ui' ), $error_data );
+			}
+
 		}
 
 		return array(
