@@ -5,6 +5,7 @@
 	position: relative;
 	width: 75%;
 }
+
 	.wpsc-dnd-cat-ui .sortable-posts .post {
 		background-color: #FFF;
 		border: 1px solid #EEE;
@@ -15,17 +16,20 @@
 		overflow: hidden;
 		padding: 3px 10px;
 	}
+
 		.wpsc-dnd-cat-ui .sortable-posts .post .loader {
-			background: url(../images/ajax-loader.gif) no-repeat 0px 0px;
+			background: url( ../images/ajax-loader.gif ) no-repeat 0px 0px;
 			display: none;
 			float: right;
 			width: 16px;
 			height: 16px;
 		}
+
 		.wpsc-dnd-cat-ui .sortable-posts .post .thumbnail {
 			display: inline-block;
 			width: 60px;
 		}
+
 			.wpsc-dnd-cat-ui .sortable-posts .post .thumbnail img {
 				height: auto;
 				margin-right: 10px;

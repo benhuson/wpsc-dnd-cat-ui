@@ -12,35 +12,73 @@ License: GPL2
 
 class WPSC_DnDCatUI {
 
+	/**
+	 * Version
+	 *
+	 * @var  string
+	 */
 	var $version = '0.2';
 
-	function WPSC_DnDCatUI() {
+	/**
+	 * Constructor
+	 */
+	public function __construct() {
+
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_filter( 'option_wpsc_sort_by', array( $this, 'option_wpsc_sort_by' ) );
 		add_action( 'admin_menu', array( $this, 'admin_menu' ), 11 );
 		add_action( 'wp_ajax_dragndrop_save_product_order', array( $this, 'save_product_order_ajax_callback' ) );
+
 	}
 
-	function admin_enqueue_scripts( $hook ) {
+	/**
+	 * Enqueue Admin Scripts
+	 *
+	 * @param  string  $hook  Admin hook.
+	 */
+	public function admin_enqueue_scripts( $hook ) {
+
 		if ( 'wpsc-product_page_wpsc_dnd_cat_ui' == $hook ) {
+
 			wp_enqueue_style( 'wpsc_dnd_cat_ui', plugins_url( 'css/wpsc-dnd-cat-ui.css' , __FILE__ ), false, $this->version );
 			wp_enqueue_script( 'wpsc_dnd_cat_ui', plugins_url( 'js/wpsc-dnd-cat-ui.js' , __FILE__ ), array( 'jquery-ui-sortable' ), $this->version );
+
 		}
+
     }
 
-	function option_wpsc_sort_by( $option ) {
+    /**
+     * Override WPSC Sort By Option
+     *
+     * @param   string  $option  Sort By Option.
+     * @return  string           Sort By Option.
+     */
+	public function option_wpsc_sort_by( $option ) {
+
 		global $wp_query, $current_screen;
+
 		if ( is_admin() && $current_screen->id == 'edit-wpsc-product' ) {
 			$option = 'id';
 		}
+
 		return $option;
+
 	}
 
-	function admin_menu() {
+	/**
+	 * Add Product Order Admin Menu
+	 */
+	public function admin_menu() {
+
 		add_submenu_page( 'edit.php?post_type=wpsc-product', __( 'Product Order', 'wpsc-dnd-cat-ui' ), __( 'Product Order', 'wpsc-dnd-cat-ui' ), 'edit_posts', 'wpsc_dnd_cat_ui', array( $this, 'dnd_cat_ui_page' ) );
+
 	}
 
-	function dnd_cat_ui_page() {
+	/**
+	 * Product Order Admin Page
+	 */
+	public function dnd_cat_ui_page() {
+
 		echo '<div class="wrap wpsc-dnd-cat-ui">
 				<div id="icon-edit" class="icon32 icon32-posts-wpsc-product"><br></div>
 				<h2>' . __( 'Product Order', 'wpsc-dnd-cat-ui' ) . '</h2>
@@ -54,16 +92,23 @@ class WPSC_DnDCatUI {
 				</form>';
 		$this->sortable_product_list();
 		echo '</div>';
+
 	}
 
-	function sortable_product_list() {
+	/**
+	 * Product Order Sortable List
+	 */
+	public function sortable_product_list() {
+
 		global $wpdb;
+
 		$term = null;
 		if ( isset( $_GET['wpsc_product_category'] ) ) {
 			$term = get_term_by( 'slug', sanitize_text_field( $_GET['wpsc_product_category'] ), 'wpsc_product_category' );
 		}
-		if ( ! $term )
+		if ( ! $term ) {
 			return;
+		}
 
 		$posts = $wpdb->get_results( $wpdb->prepare( "
 			SELECT ID, post_title FROM {$wpdb->posts}
@@ -76,6 +121,7 @@ class WPSC_DnDCatUI {
 			GROUP BY ID
 			ORDER BY tr.term_order ASC
 		", $term->term_taxonomy_id ) );
+
 		echo '<div class="sortable-posts">';
 		foreach ( $posts as $post ) {
 			echo '<div id="post-' . $post->ID . '" class="post">';
@@ -85,9 +131,16 @@ class WPSC_DnDCatUI {
 			echo '</div>';
 		}
 		echo '</div>';
+
 	}
 
-	function save_product_order_ajax_callback() {
+	/**
+	 * Save Product Order AJAX Callback
+	 *
+	 * @return  array  Product IDs.
+	 */
+	public function save_product_order_ajax_callback() {
+
 		global $wpdb;
 
 		$products = array();
@@ -141,8 +194,11 @@ class WPSC_DnDCatUI {
 		return array(
 			'ids' => $products,
 		);
+
 		die();
+
 	}
 
 }
+
 new WPSC_DnDCatUI();
