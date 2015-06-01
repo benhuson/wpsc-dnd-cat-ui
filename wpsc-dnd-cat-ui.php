@@ -4,7 +4,7 @@
 Plugin Name: WPEC Drag-n-Drop Categories UI
 Plugin URI: 
 Description: If you have loads of WP e-Commerce products and have to selected to order them by drag-n-drop, you may find your admin struggles or crashes when it tries to load all those products. This plugin reverts the product admin list to be paginated again and rather than dragging-n-dropping there, it adds a separate admin page where you can order products which is leaner and faster. Tested with WP e-Commerce 3.8.10.beta.
-Version: 0.2
+Version: 0.3
 Author: Ben Huson
 Author URI: 
 License: GPL2
