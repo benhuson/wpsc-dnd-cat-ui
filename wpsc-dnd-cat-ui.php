@@ -57,7 +57,7 @@ class WPSC_DnDCatUI {
 
 		global $wp_query, $current_screen;
 
-		if ( is_admin() && $current_screen->id == 'edit-wpsc-product' ) {
+		if ( is_admin() && $current_screen && $current_screen->id == 'edit-wpsc-product' ) {
 			$option = 'id';
 		}
 
